@@ -1,7 +1,11 @@
 import { Component } from 'react';
-import { Button } from './Button/Button';
-import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Searchbar } from './Searchbar/Searchbar';
+import { Button } from '../Button/Button';
+import { ImageGallery } from '../ImageGallery/ImageGallery';
+import { Loader } from '../Loader/Loader';
+import { Modal } from '../Modal/Modal';
+import { Searchbar } from '../Searchbar/Searchbar';
+import { AppStyled } from './App.styled';
+
  
 const KEY = '29505818-5cb88c7f65aac8c7d69f01816';
 
@@ -10,6 +14,7 @@ const Status = {
     PENDING: 'pending',
     RESOLVED: 'resolved',
     REJECTED: 'rejected',
+    LOADING: 'loading',
 };
 
 export class App extends Component {
@@ -19,6 +24,11 @@ export class App extends Component {
     searchValue: '',
     error: null,
     page: 1,
+    showModal: false,
+    largeImg: {
+      url: null,
+      alt: null,
+    },
   }
 
   saveSearchValue = searchValue => {
@@ -26,12 +36,12 @@ export class App extends Component {
   };
   
   async componentDidUpdate(_, prevState) { 
-    const URL = `https://pixabay.com/api/?q=${this.state.searchValue}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=12`;
+    const URL = `https://pixabay.com/api/?q=${this.state.searchValue}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=15`;
     
     
     if (this.state.searchValue !== prevState.searchValue) {
 
-        this.setState({ status: Status.PENDING });
+        this.setState({ images: [], status: Status.PENDING });
         try {
           const imgArray = await fetch(URL)
           .then(response =>  response.json()).then(data => data.hits)
@@ -50,7 +60,7 @@ export class App extends Component {
 
     if (this.state.searchValue === prevState.searchValue && this.state.page !== prevState.page) {
 
-      this.setState({ status: Status.PENDING });
+      this.setState({ status: Status.LOADING });
       try {
         const imgArray = await fetch(URL)
         .then(response =>  response.json()).then(data => data.hits)
@@ -72,26 +82,37 @@ export class App extends Component {
     this.setState(prevState => ({page: prevState.page + 1}))
   }
 
+  changeShowModal = (url, alt) => {
+    this.setState({ largeImg: {url, alt} })
+  }
+
+  closeModal = () => {
+    this.setState( {largeImg: {url: null, alt: null} })
+  }
+
   render() {
     const {images, status} = this.state;
     return (
 
-      <div>
+      <AppStyled>
         <Searchbar onSubmit={this.saveSearchValue}/>
         
         <div>
 
-        {status === 'pending' && <h1>Loading</h1>}
+        {status === 'pending' && <Loader />}
 
         {status === 'rejected' && <h2>Error</h2>}
 
-        {this.state.images.length > 0 && <ImageGallery images={images} />}
-        {this.state.images.length > 0 && <Button onClickButton={this.clickLoadMore}/>}
-        </div>
-        
+        {this.state.images.length > 0 && <ImageGallery images={images} openModal={this.changeShowModal} />}
 
         
-      </div>
+        </div>
+        {status === 'loading' && <Loader />}
+        {this.state.images.length > 0 && <Button onClickButton={this.clickLoadMore}/>}
+        {this.state.largeImg.url && <Modal image={this.state.largeImg} onCloseModal={this.closeModal}/>}
+
+        
+      </AppStyled>
     );
   }
 };

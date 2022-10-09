@@ -1,8 +1,9 @@
+import { ButtonStyled } from "./ButtonStyled"
 
 
 export const Button = ({ onClickButton }) => {
     return (
-            <button type="button" onClick={onClickButton}>Load more</button>    
+            <ButtonStyled type="ButtonStyled" onClick={onClickButton}>Load more</ButtonStyled>    
         )
     
 }

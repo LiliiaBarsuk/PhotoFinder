@@ -1,5 +1,6 @@
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
 import { Component } from "react";
+import { ImageGalleryStyled } from "./ImageGallery.styled";
 
 
 
@@ -9,9 +10,9 @@ export class ImageGallery extends Component {
     render() {
         const imagesArr = this.props.images;
         return (
-            <ul class="gallery">
-                <ImageGalleryItem images={imagesArr} /> 
-            </ul>
+            <ImageGalleryStyled>
+                <ImageGalleryItem images={imagesArr} openModal={this.props.openModal} /> 
+            </ImageGalleryStyled>
         )
         
         

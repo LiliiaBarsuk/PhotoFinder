@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { ImageGalleryImg, ImageGalleryItemStyled } from "./ImageGalleryItem.styled";
 
 
 export class ImageGalleryItem extends Component {
@@ -6,9 +7,9 @@ export class ImageGalleryItem extends Component {
         const images = this.props.images;
         return (
             <>
-            {images.map(img => (<li class="gallery-item" key={img.id}>
-                    <img src={img.webformatURL} alt={img.tags} width="40" heigth='40' />
-                </li>) )}
+            {images.map(img => (<ImageGalleryItemStyled key={img.id} onClick={() => this.props.openModal(img.largeImageURL, img.tags)}>
+                    <ImageGalleryImg src={img.webformatURL} alt={img.tags} width="40" heigth='40' />
+                </ImageGalleryItemStyled>) )}
             </>
         )
     }
