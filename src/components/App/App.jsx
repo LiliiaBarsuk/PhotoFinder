@@ -112,7 +112,7 @@ export class App extends Component {
         {images.length > 0 && <Button onClickButton={this.clickLoadMore}/>}
 
         {largeImg.url && <Modal image={largeImg} onCloseModal={this.closeModal}/>}
-        <Toaster />
+        <Toaster position="top-right" reverseOrder={false} toastOptions={{duration: 4000}}/>
       </AppStyled>
     );
   }
