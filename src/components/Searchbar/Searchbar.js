@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { SearchbarStyled, SearchForm, SearchFormButton, SearchFormInput } from "./Searchbar.styled";
-import {BiSearchAlt2} from 'react-icons/bi'
+import {BiSearchAlt2} from 'react-icons/bi';
+
 export class Searchbar extends Component {
     state = {
         searchValue: '',
@@ -29,11 +30,11 @@ export class Searchbar extends Component {
                         </span>
                     </SearchFormButton>
                     <SearchFormInput
-                    value={this.state.searchValue}
-                    onChange={this.saveInputValue}
-                    type="text"
-                    autoComplete="off"
-                    placeholder="Search images and photos"
+                        value={this.state.searchValue}
+                        onChange={this.saveInputValue}
+                        type="text"
+                        autoComplete="off"
+                        placeholder="Search images and photos"
                     />
                 </SearchForm>
             </SearchbarStyled>

@@ -5,6 +5,7 @@ import { Loader } from '../Loader/Loader';
 import { Modal } from '../Modal/Modal';
 import { Searchbar } from '../Searchbar/Searchbar';
 import { AppStyled } from './App.styled';
+import toast, { Toaster } from 'react-hot-toast';
 
  
 const KEY = '29505818-5cb88c7f65aac8c7d69f01816';
@@ -31,19 +32,14 @@ export class App extends Component {
     },
   }
 
-  saveSearchValue = searchValue => {
-    this.setState({ searchValue, page: 1});
-  };
-  
   async componentDidUpdate(_, prevState) { 
     const URL = `https://pixabay.com/api/?q=${this.state.searchValue}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=15`;
     
-    
     if (this.state.searchValue !== prevState.searchValue) {
+      this.setState({ images: [], status: Status.PENDING });
 
-        this.setState({ images: [], status: Status.PENDING });
-        try {
-          const imgArray = await fetch(URL)
+      try {
+        const imgArray = await fetch(URL)
           .then(response =>  response.json()).then(data => data.hits)
            
             if (imgArray.length === 0) {
@@ -51,9 +47,10 @@ export class App extends Component {
             }
               
             this.setState({ images: imgArray, status: Status.RESOLVED })
+            toast.success("Images found.")
         } catch(error) {
           this.setState({ error, status: Status.REJECTED })
-          console.log(error.name);
+          toast.error("No images with this title.")
         }
         return; 
     }
@@ -66,17 +63,25 @@ export class App extends Component {
         .then(response =>  response.json()).then(data => data.hits)
          
           if (imgArray.length === 0) {
-          throw new Error("No images with this name");
+          throw new Error("No images with this title.");
           }
             
           this.setState(prevState => ({ images: [...prevState.images, ...imgArray], status: Status.RESOLVED }))
       } catch(error) {
         this.setState({ error, status: Status.REJECTED })
-        console.log(error.name);
+        toast.error("No more images with this title.")
       }  
     }
 
   }
+
+  saveSearchValue = searchValue => {
+    if (searchValue === '') {
+      toast.error("Please enter a search query.")
+    }
+    
+    this.setState({ searchValue, page: 1});
+  };
 
   clickLoadMore = () => {
     this.setState(prevState => ({page: prevState.page + 1}))
@@ -91,27 +96,23 @@ export class App extends Component {
   }
 
   render() {
-    const {images, status} = this.state;
+    const {images, status, largeImg} = this.state;
     return (
-
       <AppStyled>
         <Searchbar onSubmit={this.saveSearchValue}/>
         
         <div>
+          {status === 'pending' && <Loader />}
 
-        {status === 'pending' && <Loader />}
-
-        {status === 'rejected' && <h2>Error</h2>}
-
-        {this.state.images.length > 0 && <ImageGallery images={images} openModal={this.changeShowModal} />}
-
-        
+          {images.length > 0 && <ImageGallery images={images} openModal={this.changeShowModal} />} 
         </div>
-        {status === 'loading' && <Loader />}
-        {this.state.images.length > 0 && <Button onClickButton={this.clickLoadMore}/>}
-        {this.state.largeImg.url && <Modal image={this.state.largeImg} onCloseModal={this.closeModal}/>}
 
-        
+        {status === 'loading' && <Loader />}
+
+        {images.length > 0 && <Button onClickButton={this.clickLoadMore}/>}
+
+        {largeImg.url && <Modal image={largeImg} onCloseModal={this.closeModal}/>}
+        <Toaster />
       </AppStyled>
     );
   }
