@@ -6,6 +6,7 @@ import { Modal } from '../Modal/Modal';
 import { Searchbar } from '../Searchbar/Searchbar';
 import { AppStyled } from './App.styled';
 import toast, { Toaster } from 'react-hot-toast';
+import { fetchData } from 'components/services/api';
 
  
 const KEY = '29505818-5cb88c7f65aac8c7d69f01816';
@@ -32,15 +33,14 @@ export class App extends Component {
     },
   }
 
-  async componentDidUpdate(_, prevState) { 
+async componentDidUpdate(_, prevState) { 
     const URL = `https://pixabay.com/api/?q=${this.state.searchValue}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=15`;
     
     if (this.state.searchValue !== prevState.searchValue) {
       this.setState({ images: [], status: Status.PENDING });
 
       try {
-        const imgArray = await fetch(URL)
-          .then(response =>  response.json()).then(data => data.hits)
+        const imgArray = await fetchData(URL);
            
             if (imgArray.length === 0) {
             throw new Error("No images with this name");
@@ -59,11 +59,10 @@ export class App extends Component {
 
       this.setState({ status: Status.LOADING });
       try {
-        const imgArray = await fetch(URL)
-        .then(response =>  response.json()).then(data => data.hits)
+        const imgArray = await fetchData(URL);
          
           if (imgArray.length === 0) {
-          throw new Error("No images with this title.");
+          throw new Error("No more images with this title.");
           }
             
           this.setState(prevState => ({ images: [...prevState.images, ...imgArray], status: Status.RESOLVED }))
@@ -112,7 +111,7 @@ export class App extends Component {
         {images.length > 0 && <Button onClickButton={this.clickLoadMore}/>}
 
         {largeImg.url && <Modal image={largeImg} onCloseModal={this.closeModal}/>}
-        <Toaster position="top-right" reverseOrder={false} toastOptions={{duration: 4000}}/>
+        <Toaster position="top-right" reverseOrder={false} toastOptions={{duration: 5000}}/>
       </AppStyled>
     );
   }
