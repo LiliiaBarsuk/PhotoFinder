@@ -15,16 +15,22 @@ export class Modal extends Component {
         window.removeEventListener('keydown', this.closeByKeyDown)
     }
     
-    closeByKeyDown = (e) => {
+    closeByKeyDown = e => {
         if(e.code === 'Escape') {
             this.props.onCloseModal();
          } 
     }
 
+    closeByClickOnBackdrop = e => {
+        if (e.target === e.currentTarget) {
+            this.props.onCloseModal();
+        }
+    }
+
     render() {
         
         return createPortal(
-            <Overlay onClick={this.props.onCloseModal}>
+            <Overlay onClick={this.closeByClickOnBackdrop}>
                 <ModalStyled>
                     <img src={this.props.image.url} alt={this.props.image.alt} />
                 </ModalStyled>
