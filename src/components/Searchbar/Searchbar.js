@@ -12,6 +12,10 @@ export const Searchbar = ({ onSubmit }) => {
 
     const submitForm = e => {
         e.preventDefault();
+        if (searchValue.trim() === '') {
+            console.log('Error');
+        }
+
         onSubmit(searchValue);
     }
     
