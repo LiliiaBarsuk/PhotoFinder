@@ -6,7 +6,7 @@ import { Modal } from '../Modal/Modal';
 import { Searchbar } from '../Searchbar/Searchbar';
 import { AppStyled } from './App.styled';
 import toast, { Toaster } from 'react-hot-toast';
-import { fetchData } from 'components/services/api';
+import { fetchData } from 'services/api';
 
  
 const KEY = '29505818-5cb88c7f65aac8c7d69f01816';
