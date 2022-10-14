@@ -1,4 +1,3 @@
-import { Component } from "react";
 import { ImageGalleryImg, ImageGalleryItemStyled } from "./ImageGalleryItem.styled";
 import PropTypes from 'prop-types';
 
