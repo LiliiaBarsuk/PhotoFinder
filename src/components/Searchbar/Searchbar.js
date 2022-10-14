@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SearchbarStyled, SearchForm, SearchFormButton, SearchFormInput } from "./Searchbar.styled";
 import {BiSearchAlt2} from 'react-icons/bi';
 
+
 export const Searchbar = ({ onSubmit }) => {
     const [searchValue, setSearchValue] = useState('')
 
@@ -12,10 +13,6 @@ export const Searchbar = ({ onSubmit }) => {
 
     const submitForm = e => {
         e.preventDefault();
-        if (searchValue.trim() === '') {
-            console.log('Error');
-        }
-
         onSubmit(searchValue);
     }
     
