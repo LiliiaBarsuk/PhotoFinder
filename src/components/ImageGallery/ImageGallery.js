@@ -1,18 +1,14 @@
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
-import { Component } from "react";
 import { ImageGalleryStyled } from "./ImageGallery.styled";
 import PropTypes from 'prop-types';
 
-export class ImageGallery extends Component {
+export const ImageGallery = ({ images, openModal }) => {
 
-    render() {
-        const imagesArr = this.props.images;
         return (
             <ImageGalleryStyled>
-                <ImageGalleryItem images={imagesArr} openModal={this.props.openModal} /> 
+                <ImageGalleryItem images={images} openModal={openModal} /> 
             </ImageGalleryStyled>
         )     
-    }
 }
 
 ImageGallery.propTypes = {

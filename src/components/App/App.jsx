@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../Button/Button';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { Loader } from '../Loader/Loader';
@@ -19,100 +19,68 @@ const Status = {
     LOADING: 'loading',
 };
 
-export class App extends Component {
-  state = {
-    images: [],
-    status: Status.IDLE,
-    searchValue: '',
-    error: null,
-    page: 1,
-    showModal: false,
-    largeImg: {
-      url: null,
-      alt: null,
-    },
-  }
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [status, setStatus] = useState(Status.IDLE);
+  const [searchValue, setSearchValue] = useState('');
+  const [page, setPage] = useState(1);
+  const [largeImgUrl, setLargeImgUrl] = useState(null);
 
-async componentDidUpdate(_, prevState) { 
-    const URL = `https://pixabay.com/api/?q=${this.state.searchValue}&page=${this.state.page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=15`;
-    
-    if (this.state.searchValue !== prevState.searchValue) {
-      this.setState({ images: [], status: Status.PENDING });
+  useEffect(() => {
 
-      try {
-        const imgArray = await fetchData(URL);
-           
-            if (imgArray.length === 0) {
-            throw new Error("No images with this name");
-            }
-              
-            this.setState({ images: imgArray, status: Status.RESOLVED })
-            toast.success("Images found.")
-        } catch(error) {
-          this.setState({ error, status: Status.REJECTED })
-          toast.error("No images with this title.")
-        }
-        return; 
-    }
-
-    if (this.state.searchValue === prevState.searchValue && this.state.page !== prevState.page) {
-
-      this.setState({ status: Status.LOADING });
+    async function fetchImages(name, page) {
+      setStatus(Status.PENDING);
+      
+      const URL = `https://pixabay.com/api/?q=${name}&page=${page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=15`;
+      
       try {
         const imgArray = await fetchData(URL);
          
-          if (imgArray.length === 0) {
-          throw new Error("No more images with this title.");
-          }
-            
-          this.setState(prevState => ({ images: [...prevState.images, ...imgArray], status: Status.RESOLVED }))
+        if (imgArray.length === 0) {
+          throw new Error("No images with this name");
+        }
+
+        setImages(prevState => [...prevState, ...imgArray]);
+        setStatus(Status.RESOLVED);
+        toast.success("Images found.");
       } catch(error) {
-        this.setState({ error, status: Status.REJECTED })
-        toast.error("No more images with this title.")
-      }  
-    }
-
-  }
-
-  saveSearchValue = searchValue => {
-    if (searchValue === '') {
-      toast.error("Please enter a search query.")
+          setStatus(Status.REJECTED);
+          toast.error("No images with this title.")
+        }
     }
     
-    this.setState({ searchValue, page: 1});
+    if (searchValue !== '') {
+      fetchImages(searchValue, page);
+    }
+    
+  }, [searchValue, page])
+  
+  const saveSearchValue = value => {
+    if (value === '') {
+      toast.error("Please enter a search query.")
+    }  
+
+    setSearchValue(value);
+    setPage(1);
+    setImages([]);
   };
 
-  clickLoadMore = () => {
-    this.setState(prevState => ({page: prevState.page + 1}))
+  const clickLoadMore = () => {
+    setPage(prevState => prevState + 1)
   }
 
-  changeShowModal = (url, alt) => {
-    this.setState({ largeImg: {url, alt} })
-  }
-
-  closeModal = () => {
-    this.setState( {largeImg: {url: null, alt: null} })
-  }
-
-  render() {
-    const {images, status, largeImg} = this.state;
     return (
       <AppStyled>
-        <Searchbar onSubmit={this.saveSearchValue}/>
-        
-        <div>
-          {status === 'pending' && <Loader />}
+        <Searchbar onSubmit={saveSearchValue}/>
+        {images.length > 0 && <ImageGallery images={images} openModal={setLargeImgUrl} />} 
 
-          {images.length > 0 && <ImageGallery images={images} openModal={this.changeShowModal} />} 
-        </div>
+        {status === 'pending' && <Loader />}
+       
+        {images.length > 0 && <Button onClickButton={clickLoadMore}/>}
 
-        {status === 'loading' && <Loader />}
-
-        {images.length > 0 && <Button onClickButton={this.clickLoadMore}/>}
-
-        {largeImg.url && <Modal image={largeImg} onCloseModal={this.closeModal}/>}
+        {largeImgUrl && <Modal image={largeImgUrl} onCloseModal={setLargeImgUrl}/>}
         <Toaster position="top-right" reverseOrder={false} toastOptions={{duration: 5000}}/>
       </AppStyled>
     );
-  }
+  
 };
