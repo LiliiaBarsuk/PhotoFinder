@@ -31,8 +31,6 @@ export const App = () => {
     async function fetchImages(name, page) {
       setStatus(Status.PENDING);
       
-      const URL = `https://pixabay.com/api/?q=${name}&page=${page}&key=${KEY}&image_type=photo&orientation=horizontal&per_page=15`;
-      
       try {
         const imgArray = await fetchData(URL);
          
@@ -50,7 +48,7 @@ export const App = () => {
     }
     
     if (searchValue !== '') {
-      fetchImages(searchValue, page);
+      fetchImages(searchValue, page, KEY);
     }
     
   }, [searchValue, page])
