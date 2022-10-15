@@ -28,11 +28,11 @@ export const App = () => {
 
   useEffect(() => {
 
-    async function fetchImages(name, page) {
+    async function fetchImages(name, page, key) {
       setStatus(Status.PENDING);
       
       try {
-        const imgArray = await fetchData(URL);
+        const imgArray = await fetchData(name, page, key);
          
         if (imgArray.length === 0) {
           throw new Error("No images with this name");
