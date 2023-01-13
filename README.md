@@ -1,4 +1,4 @@
-# Image finder
+# PhotoFinder
 
 
 A simple application for searching and viewing images on user request
